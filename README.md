@@ -12,17 +12,19 @@ The goals / steps of this project are the following:
 
 ## Code layout
 
-This project contains the following main files:
+This project consists of the following files:
 
 - This `README.md` file which you're reading
 - `model.py` is the single Python file which implements the entire CNN model. Output after running
   this file is a single model file with the current timestamp embedded in the name.
+- `drive.py` which is used to connect the simulator to the trained model and steer the car based
+- `model.h5` model file which, due to it's size, is stored on S3: http://brianz-udacity-sdc.s3.amazonaws.com/p3/model.h5
 
 ## Training data
 
-For this project I used the Udacity-provided data set along with my own data sets.
+For this project I used the Udacity-provided data set along with my own manually collected data sets.
 
-The Driving data I collected can be broken into two sections:
+The driving data I collected can be broken into two sections:
 
 - "Normal" driving around the track
 - "Hard turns" and critical turns along the track
@@ -37,47 +39,50 @@ the left side driving the results were much better
 ### Hard turns and critical turns
 
 Initially, I started driving in automomous mode with just the "normal driving" data. I quickly found that the car had
-no idea how to handle driving off the side of the road and would never recover. To deal with this, I successively created
-datasets where I would perform the following at different parts of the track:
+no idea how to handle driving near or off the side of the road and would never recover. To deal with this, I 
+created datasets where I would perform the following at different parts of the track:
 
 - while starting off driving on the right or left lane, start recording and turn hard to get to the center of the road
-- while steering directly off the side of the road, start recording and turn hard to re-center
-- 
+- while headed off/pointing towards the side of the road, start recording and turn hard to re-center
+- at critical parts of the track, namely big turns, make successive recordsing ensuring to make hard rather
+  than gradual turns
 
+#### Hard turns after driving on lane
+![Hard left turn from right lane](https://github.com/brianz/udacity-sdc-p3/blob/master/hard-left-turn-while-driving-on-lane.gif)
 
-![Hard left turn after heading right](https://github.com/brianz/udacity-sdc-p3/blob/master/hard-left-turn-after-heading-to-right-lane.gif)
+![Hard right turn from left lane](https://github.com/brianz/udacity-sdc-p3/blob/master/hard-right-turn-while-driving-on-lane.gif)
+
+#### Hard turn to center after heading off road
+
+![Hard turn back after heading off side of road](https://github.com/brianz/udacity-sdc-p3/blob/master/hard-left-turn-after-heading-to-right-lane.gif)
+
+![Hard turn to center after heading off road near big rock](https://github.com/brianz/udacity-sdc-p3/blob/master/hard-right-turn-after-big-rock-apex.gif)
 
 ## Rubric Points
 ###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
 
----
-###Files Submitted & Code Quality
 
-####1. Submission includes all required files and can be used to run the simulator in autonomous mode
+## Usage
 
-My project includes the following files:
-* model.py containing the script to create and train the model
-* drive.py for driving the car in autonomous mode
-* model.h5 containing a trained convolution neural network 
-* writeup_report.md or writeup_report.pdf summarizing the results
-
-####2. Submssion includes functional code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
 ```sh
+curl -O http://brianz-udacity-sdc.s3.amazonaws.com/p3/model.h5
 python drive.py model.h5
 ```
 
-####3. Submssion code is usable and readable
+## Model Architecture and Training Strategy
 
-The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works.
+`model.py` includes an implemenation of the Nvida model which can be found at https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/.
+This model can be seen in the [`get_model` function](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L120)
+and consists of:
 
-###Model Architecture and Training Strategy
+- normalization
+- 3 `5x5` convolutions with 3, 24 and 36 output layers, each with a `2x2` stride and a Relu activation
+- 2 `3x3` convolutions with 48 and 48 output layers, each with a `1x1` stride and Relu activation
+- 1 flattening layer
+- 4 fully connected layers with 1164, 100, 50 and 10 output layers, each with Relu activation
+- 1 finaly fully connected layer with a single output which consists of the final steering angle prediction
 
-####1. An appropriate model arcthiecture has been employed
-
-My model consists of a convolution neural network with 3x3 filter sizes and depths between 32 and 128 (model.py lines 18-24) 
-
-The model includes RELU layers to introduce nonlinearity (code line 20), and the data is normalized in the model using a Keras lambda layer (code line 18). 
 
 ####2. Attempts to reduce overfitting in the model
 
