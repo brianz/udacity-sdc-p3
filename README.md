@@ -37,16 +37,16 @@ This project consists of the following files:
 The `model.py` file is fully self contained and can be run as-is provided the dependencies are installed on a local system.
 
 Generators are used to provide training and validation data.  These can be found on lines 
-[77](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L77), 
-[110](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L110)
-and [115](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L115)
+[77](model.py#L77), 
+[110](model.py#L110)
+and [115](model.py#L115)
 
 
 ## Model Architecture and Training Strategy
 
 ### Model
 `model.py` includes an implemenation of the [Nvida model which can be found at this blog post](https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/).
-This model can be seen in the [`get_model` function](blob/master/model.py#L120)
+This model can be seen in the [`get_model` function](model.py#L120)
 and consists of:
 
 - normalization
@@ -88,15 +88,15 @@ created datasets where I would perform the following at different parts of the t
 
 **Hard turns after driving on lane**
 
-![Hard left turn from right lane](blob/master/hard-left-turn-while-driving-on-lane.gif)
+![Hard left turn from right lane](images/hard-left-turn-while-driving-on-lane.gif)
 
-![Hard right turn from left lane](blob/master/hard-right-turn-while-driving-on-lane.gif)
+![Hard right turn from left lane](images/hard-right-turn-while-driving-on-lane.gif)
 
 **Hard turn to center after heading off road**
 
-![Hard turn back after heading off side of road](blob/master/hard-left-turn-after-heading-to-right-lane.gif)
+![Hard turn back after heading off side of road](images/hard-left-turn-after-heading-to-right-lane.gif)
 
-![Hard turn to center after heading off road near big rock](blob/master/hard-right-turn-after-big-rock-apex.gif)
+![Hard turn to center after heading off road near big rock](images/hard-right-turn-after-big-rock-apex.gif)
 
 ### Training strategy
 
@@ -115,8 +115,8 @@ up training. Below is an example of the original image and the cropped image:
 
 <table>
   <tr>
-    <td>![](blob/master/center.jpg)</td>
-    <td>![](blob/master/center-proc.jpg)</td>
+    <td>![](images/center.jpg)</td>
+    <td>![](images/center-proc.jpg)</td>
   </tr>
 </table>
 
@@ -129,8 +129,8 @@ After visualizing a historgram of the test data it was clear that the vast major
 `0.0°` steering angle. I performed some basic culling of the data before the model even started running.
 
 My heuristic for trimming data was quite simple: take variable amount of `0.0°` steering data from the Udacity data set
-and take 100% of my own data set. This can be seen in [the `take_record` function](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L29-L43) 
-and it's usage in the [`build_img_list` function](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L67).
+and take 100% of my own data set. This can be seen in [the `take_record` function](model.py#L29-L43) 
+and it's usage in the [`build_img_list` function](model.py#L67).
 
 Additionally, I experiemented with turning different data sets on and off.  I found that my model performed very well
 when I turned off my "normal" data set where I drived mostly on the left side of the track.
@@ -140,7 +140,7 @@ with the simulator.
 
 ### Model parameter tuning
 
-[The model used an adam optimizer](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L195), so the 
+[The model used an adam optimizer](model.py#L195), so the 
 learning rate was not tuned manually.
 
 
