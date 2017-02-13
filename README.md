@@ -12,6 +12,15 @@ The goals / steps of this project are the following:
 
 This `README.md` is organized to follow the project requirement rubrics.
 
+## Usage
+
+Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
+
+```sh
+curl -O http://brianz-udacity-sdc.s3.amazonaws.com/p3/model.h5
+python drive.py model.h5
+```
+
 ## Required Files
 
 This project consists of the following files:
@@ -21,6 +30,7 @@ This project consists of the following files:
   this file is a single model file with the current timestamp embedded in the name.
 - `drive.py` which is used to connect the simulator to the trained model and steer the car based
 - `model.h5` model file which, due to it's size, is stored on S3: http://brianz-udacity-sdc.s3.amazonaws.com/p3/model.h5
+
 
 ## Quality of Code
 
@@ -36,7 +46,7 @@ and [115](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L115)
 
 ### Model
 `model.py` includes an implemenation of the [Nvida model which can be found at this blog post](https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/).
-This model can be seen in the [`get_model` function](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L120)
+This model can be seen in the [`get_model` function](blob/master/model.py#L120)
 and consists of:
 
 - normalization
@@ -45,7 +55,6 @@ and consists of:
 - 1 flattening layer
 - 4 fully connected layers with 1164, 100, 50 and 10 output layers, each with Relu activation
 - 1 finaly fully connected layer with a single output which consists of the final steering angle prediction
-
 
 ### Training data
 
@@ -79,26 +88,41 @@ created datasets where I would perform the following at different parts of the t
 
 **Hard turns after driving on lane**
 
-![Hard left turn from right lane](https://github.com/brianz/udacity-sdc-p3/blob/master/hard-left-turn-while-driving-on-lane.gif)
+![Hard left turn from right lane](blob/master/hard-left-turn-while-driving-on-lane.gif)
 
-![Hard right turn from left lane](https://github.com/brianz/udacity-sdc-p3/blob/master/hard-right-turn-while-driving-on-lane.gif)
+![Hard right turn from left lane](blob/master/hard-right-turn-while-driving-on-lane.gif)
 
 **Hard turn to center after heading off road**
 
-![Hard turn back after heading off side of road](https://github.com/brianz/udacity-sdc-p3/blob/master/hard-left-turn-after-heading-to-right-lane.gif)
+![Hard turn back after heading off side of road](blob/master/hard-left-turn-after-heading-to-right-lane.gif)
 
-![Hard turn to center after heading off road near big rock](https://github.com/brianz/udacity-sdc-p3/blob/master/hard-right-turn-after-big-rock-apex.gif)
+![Hard turn to center after heading off road near big rock](blob/master/hard-right-turn-after-big-rock-apex.gif)
 
-## Usage
+### Training strategy
 
-Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
-```sh
-curl -O http://brianz-udacity-sdc.s3.amazonaws.com/p3/model.h5
-python drive.py model.h5
-```
+I initially tried testing after trianing on the "Normal" driving data.  After poor performance on the first turn
+(where the car simply drove off into the water) I created 3-4 recordings on turn one where I would 
 
+- get the car set up in the turn, pointing directly toward the edge of the road toward the water
+- while the car was moving, hit spacebar to start recording
+- turn hard left into the middle of the road
+- end recording
+- back car up and repeat
 
-## Attempts to reduce overfitting in the model
+At some point I tried cropping the top 60 pixels of the images in order to focus just on the road features.
+This appeared to work well while also reducing the number of features the model needed to calculate, speeding
+up training. Below is an example of the original image and the cropped image:
+
+<table>
+  <tr>
+    <td>![](blob/master/center.jpg)</td>
+    <td>![](blob/master/center-proc.jpg)</td>
+  </tr>
+</table>
+
+I followed an iterative process of
+
+### Attempts to reduce overfitting in the model
 
 I found that I started to get quite good result fairly quickly as soon as I introduced hard turn and key turn data sets. 
 After visualizing a historgram of the test data it was clear that the vast majority of test data was associated with 
@@ -111,67 +135,25 @@ and it's usage in the [`build_img_list` function](https://github.com/brianz/udac
 Additionally, I experiemented with turning different data sets on and off.  I found that my model performed very well
 when I turned off my "normal" data set where I drived mostly on the left side of the track.
 
-## Model parameter tuning
+I _did_ try adding some dropout layers at different steps. However, the model actually performed _worse_ when testing
+with the simulator.
+
+### Model parameter tuning
 
 [The model used an adam optimizer](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L195), so the 
 learning rate was not tuned manually.
 
-####4. Appropriate training data
 
-Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road ... 
+## Architecture and Training Documentation
 
-For details about how I created the training data, see the next section. 
+I started with the [Nvidia model](https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/) mostly
+as an experiement and figuring that this model had already produced solid results. Since I continued to see
+good results and saw big changes with changes in training data I focused on producing quality training data
+over experimenting with different models.
 
-###Model Architecture and Training Strategy
+## Performance
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VeFm4lJxAGk?ecver=1" frameborder="0" allowfullscreen></iframe>
 
-####1. Solution Design Approach
-
-The overall strategy for deriving a model architecture was to ...
-
-My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
-
-In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
-
-To combat the overfitting, I modified the model so that ...
-
-Then I ... 
-
-The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
-
-At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
-
-####2. Final Model Architecture
-
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
-
-Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
-
-![alt text][image1]
-
-####3. Creation of the Training Set & Training Process
-
-To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
-
-![alt text][image2]
-
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
-
-![alt text][image3]
-![alt text][image4]
-![alt text][image5]
-
-Then I repeated this process on track two in order to get more data points.
-
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
-
-![alt text][image6]
-![alt text][image7]
-
-Etc ....
-
-After the collection process, I had X number of data points. I then preprocessed this data by ...
-
-
-I finally randomly shuffled the data set and put Y% of the data into a validation set. 
-
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=VeFm4lJxAGk" target="_blank">
+  <img src="http://img.youtube.com/vi/VeFm4lJxAGk/0.jpg" border="10" />
+</a>
