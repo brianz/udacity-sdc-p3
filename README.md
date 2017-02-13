@@ -10,7 +10,9 @@ The goals / steps of this project are the following:
 * Test that the model successfully drives around track one without leaving the road
 * Summarize the results with a written report
 
-## Code layout
+This `README.md` is organized to follow the project requirement rubrics.
+
+## Required Files
 
 This project consists of the following files:
 
@@ -20,7 +22,32 @@ This project consists of the following files:
 - `drive.py` which is used to connect the simulator to the trained model and steer the car based
 - `model.h5` model file which, due to it's size, is stored on S3: http://brianz-udacity-sdc.s3.amazonaws.com/p3/model.h5
 
-## Training data
+## Quality of Code
+
+The `model.py` file is fully self contained and can be run as-is provided the dependencies are installed on a local system.
+
+Generators are used to provide training and validation data.  These can be found on lines 
+[77](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L77), 
+[110](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L110)
+and [115](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L115)
+
+
+## Model Architecture and Training Strategy
+
+### Model
+`model.py` includes an implemenation of the [Nvida model which can be found at this blog post](https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/).
+This model can be seen in the [`get_model` function](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L120)
+and consists of:
+
+- normalization
+- 3 `5x5` convolutions with 3, 24 and 36 output layers, each with a `2x2` stride and a Relu activation
+- 2 `3x3` convolutions with 48 and 48 output layers, each with a `1x1` stride and Relu activation
+- 1 flattening layer
+- 4 fully connected layers with 1164, 100, 50 and 10 output layers, each with Relu activation
+- 1 finaly fully connected layer with a single output which consists of the final steering angle prediction
+
+
+### Training data
 
 For this project I used the Udacity-provided data set along with my own manually collected data sets.
 
@@ -32,14 +59,14 @@ The driving data I collected can be broken into two sections:
   - Favor right side of track
 - "Hard turns" and critical turns along the track
 
-### Normal driving
+#### Normal driving
 
 The normal driving which I performed was simply driving the track either in the center of the road or on the right 
 side of the road. I originally had another data set where I drove on the left side of the road, however I found with
 that data set performance was much worse where the car would drive too far to the left and off the road. By removing
 the left side driving the results were much better
 
-### Hard turns and critical turns
+#### Hard turns and critical turns
 
 Initially, I started driving in automomous mode with just the "normal driving" data. I quickly found that the car had
 no idea how to handle driving near or off the side of the road and would never recover. To deal with this, I 
@@ -50,12 +77,13 @@ created datasets where I would perform the following at different parts of the t
 - at critical parts of the track, namely big turns, make successive recordsing ensuring to make hard rather
   than gradual turns
 
-#### Hard turns after driving on lane
+**Hard turns after driving on lane**
+
 ![Hard left turn from right lane](https://github.com/brianz/udacity-sdc-p3/blob/master/hard-left-turn-while-driving-on-lane.gif)
 
 ![Hard right turn from left lane](https://github.com/brianz/udacity-sdc-p3/blob/master/hard-right-turn-while-driving-on-lane.gif)
 
-#### Hard turn to center after heading off road
+**Hard turn to center after heading off road**
 
 ![Hard turn back after heading off side of road](https://github.com/brianz/udacity-sdc-p3/blob/master/hard-left-turn-after-heading-to-right-lane.gif)
 
@@ -69,18 +97,6 @@ curl -O http://brianz-udacity-sdc.s3.amazonaws.com/p3/model.h5
 python drive.py model.h5
 ```
 
-## Model Architecture and Training Strategy
-
-`model.py` includes an implemenation of the [Nvida model which can be found at this blog post](https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/).
-This model can be seen in the [`get_model` function](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L120)
-and consists of:
-
-- normalization
-- 3 `5x5` convolutions with 3, 24 and 36 output layers, each with a `2x2` stride and a Relu activation
-- 2 `3x3` convolutions with 48 and 48 output layers, each with a `1x1` stride and Relu activation
-- 1 flattening layer
-- 4 fully connected layers with 1164, 100, 50 and 10 output layers, each with Relu activation
-- 1 finaly fully connected layer with a single output which consists of the final steering angle prediction
 
 ## Attempts to reduce overfitting in the model
 
