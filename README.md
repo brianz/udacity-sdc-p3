@@ -27,6 +27,9 @@ For this project I used the Udacity-provided data set along with my own manually
 The driving data I collected can be broken into two sections:
 
 - "Normal" driving around the track
+  - Favor left side of track
+  - Favor center of track
+  - Favor right side of track
 - "Hard turns" and critical turns along the track
 
 ### Normal driving
@@ -58,10 +61,6 @@ created datasets where I would perform the following at different parts of the t
 
 ![Hard turn to center after heading off road near big rock](https://github.com/brianz/udacity-sdc-p3/blob/master/hard-right-turn-after-big-rock-apex.gif)
 
-## Rubric Points
-###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
-
-
 ## Usage
 
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
@@ -72,7 +71,7 @@ python drive.py model.h5
 
 ## Model Architecture and Training Strategy
 
-`model.py` includes an implemenation of the Nvida model which can be found at https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/.
+`model.py` includes an implemenation of the [Nvida model which can be found at this blog post](https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/).
 This model can be seen in the [`get_model` function](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L120)
 and consists of:
 
@@ -83,16 +82,23 @@ and consists of:
 - 4 fully connected layers with 1164, 100, 50 and 10 output layers, each with Relu activation
 - 1 finaly fully connected layer with a single output which consists of the final steering angle prediction
 
+## Attempts to reduce overfitting in the model
 
-####2. Attempts to reduce overfitting in the model
+I found that I started to get quite good result fairly quickly as soon as I introduced hard turn and key turn data sets. 
+After visualizing a historgram of the test data it was clear that the vast majority of test data was associated with 
+`0.0°` steering angle. I performed some basic culling of the data before the model even started running.
 
-The model contains dropout layers in order to reduce overfitting (model.py lines 21). 
+My heuristic for trimming data was quite simple: take variable amount of `0.0°` steering data from the Udacity data set
+and take 100% of my own data set. This can be seen in [the `take_record` function](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L29-L43) 
+and it's usage in the [`build_img_list` function](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L67).
 
-The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+Additionally, I experiemented with turning different data sets on and off.  I found that my model performed very well
+when I turned off my "normal" data set where I drived mostly on the left side of the track.
 
-####3. Model parameter tuning
+## Model parameter tuning
 
-The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 25).
+[The model used an adam optimizer](https://github.com/brianz/udacity-sdc-p3/blob/master/model.py#L195), so the 
+learning rate was not tuned manually.
 
 ####4. Appropriate training data
 
