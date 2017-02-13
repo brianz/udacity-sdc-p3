@@ -113,12 +113,8 @@ At some point I tried cropping the top 60 pixels of the images in order to focus
 This appeared to work well while also reducing the number of features the model needed to calculate, speeding
 up training. Below is an example of the original image and the cropped image:
 
-<table>
-  <tr>
-    <td>![](images/center.jpg)</td>
-    <td>![](images/center-proc.jpg)</td>
-  </tr>
-</table>
+![Original image](images/center.jpg)
+![Cropped image](images/center-proc.jpg)
 
 I followed an iterative process of
 
