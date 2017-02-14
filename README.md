@@ -12,6 +12,18 @@ The goals / steps of this project are the following:
 
 This `README.md` is organized to follow the project requirement rubrics.
 
+
+## Final results
+
+Click the image below to view the results from track 1 on YouTube:
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VeFm4lJxAGk?ecver=1" frameborder="0" allowfullscreen></iframe>
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=VeFm4lJxAGk" target="_blank">
+  <img src="http://img.youtube.com/vi/VeFm4lJxAGk/0.jpg" border="10" />
+</a>
+
+
 ## Usage
 
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
@@ -146,9 +158,58 @@ as an experiment and figuring that this model had already produced solid results
 good results and saw big changes with changes in training data I focused on producing quality training data
 over experimenting with different models.
 
-## Performance
-<iframe width="560" height="315" src="https://www.youtube.com/embed/VeFm4lJxAGk?ecver=1" frameborder="0" allowfullscreen></iframe>
+What I ended up with was the following training data, each of which are organized into their own
+directory:
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=VeFm4lJxAGk" target="_blank">
-  <img src="http://img.youtube.com/vi/VeFm4lJxAGk/0.jpg" border="10" />
-</a>
+```
+brianz@utah(master=)$ tree -d -L 1 training-data/
+training-data/
+├── bz-training-backon-road1
+├── bz-training-backon-road2
+├── bz-training-backon-road3
+├── bz-training-backon-road4
+├── bz-training-backon-road5
+├── bz-training-big-rock-apex
+├── bz-training-hardleft-by-dirt-1
+├── bz-training-hardturns-1
+├── bz-training-loop1
+├── bz-training-loop2
+├── bz-training-loop3
+└── udacity-data
+```
+
+Everything prefixed with `bz-` is my own data.  There are a few different categories of training
+data I collected:
+
+- `backon-road`: Corrections for getting back to center of road when starting out of or on
+  left/right lanes
+  ![](images/backon-road.gif)
+- `loop`: Just normal driving, `loop1` was center of road, `loop2` right side and `loop3` left side
+  ![](images/training-loop.gif)
+- specific areas: The other sets were specific areas of the track which posed problematic
+
+__Note__: I ended up scrapping `loop3` which favored the left side of the track since it resulted
+in the car driving too close and ultimately off the left side of the track.  Since this track runs
+counter-clockwise it makes sense that adding in more data which shows favoritism to the left would
+produce overly aggressive left-side results.
+
+### Fitting
+
+I experimented with `epochs` in the range of 5-30.  I found that much above 10 the model didn't
+improve much, if at all, and could produce worse results.  I also found that the loss continued to
+decrease on the 8th and 9th epoch.  Finally I settled on 10 since I was getting good results from
+the simulator.  Since I was running on an AWS GPU instance training was very fast.
+
+For the batch size, I originally set this to be very small as I was iterating on the model.  Once I
+got the code working I set this to 2048.  Since I had around 8000 training images and I was using
+10 epochs I figured 2048 was a decent number since my model would see all of the training images
+2-3 times.  I used (roughly) the same proportion/logic for the validation data.
+
+I really didn't experiment with the batch size much since I started getting good results in
+the simulator and it appeared as though getting good training data into the model was quite
+effective and showed immediate results.
+
+Below shows an image from some of the validation set with the cropped image the model trained on
+along with the actual and predicted steering angles.
+
+![Predictions](images/predictions.jpg)
