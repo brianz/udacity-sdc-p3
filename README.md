@@ -212,4 +212,4 @@ effective and showed immediate results.
 Below shows an image from some of the validation set with the cropped image the model trained on
 along with the actual and predicted steering angles.
 
-![Predictions](images/predictions.jpg)
+![Predictions](images/predictions.png)
